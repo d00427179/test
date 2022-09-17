@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+            input {
+                height: 20px;
+            }
+            #select > img {
+                width: 9.5vw;
+                cursor: pointer;
+            }
+            #root > img {
+                width: 24.5vw;
+            }
+        </style>
+    </head>
+    <body>
+        cate: <input id="cate" value="3" type="number"/>
+        page: <input id="page" value="1" type="number"/>
+        <button onclick="init()">开始</button>
+        <div id="select"></div>
+        <div id="root"></div>
+        <script>
+            const select = document.getElementById('select');
+            const root = document.getElementById('root');
+            function init() {
+                const cate = document.getElementById('cate').value;
+                const page = document.getElementById('page').value;
+                fetch(`/links?cate=${cate}&page=${page}`).then(res => res.json()).then(res => {
+                    select.innerHTML = Object.keys(res).map(i => {
+                        return `<img src="${res[i]}" onclick="selectImg('${i}')"/>`
+                    }).join('');
+                })
+            }
+            function selectImg(url) {
+                fetch(`/link?url=${encodeURIComponent(url)}`).then(res => res.json()).then(res => {
+                    root.innerHTML = res.map(i => `<img src="${i}"/>`).join('');
+                }).catch(e => alert('error!'));
+            }
+            init()
+        </script>
+    </body>
+</html>
