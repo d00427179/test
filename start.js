@@ -9,10 +9,10 @@ const router = new Router({});
 
 
 // 域名 最后有几张图片 列表页的地址reg  list地址拼接函数
-// const domain = 'http://seemed.cn/', picSlice = 14, pageReg = /page=[0-9]+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `?cate=${cate}&page=${page}` };
-// const domain = 'https://www.99ztu.com/', picSlice = 9, pageReg = /\_[0-9]+\.html+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `mingzhan/index${page > 1 ? ('_' + page) : ''}.html` };
+// const domain = 'http://seemed.cn/', picSlice = 14, pageReg = /page=[0-9]+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `?cate=3&page=${page}` };  // 2 3
+// const domain = 'https://www.99ztu.com/', picSlice = 9, pageReg = /\_[0-9]+\.html+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `tese/index${page > 1 ? ('_' + page) : ''}.html` };
 // const domain = 'https://www.930tu.com/', picSlice = 0, pageReg = /\_[0-9]+\.html+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `meinv/index${page > 1 ? ('_' + page) : ''}.html` };
-const domain = 'https://www.itu11.com/', picSlice = 21, pageReg = /\_[0-9]+\.html+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `xingganmeinvxiezhen/list_1_${page}.html` };
+const domain = 'https://www.itu11.com/', picSlice = 25, pageReg = /\_[0-9]+\.html+$/, listUrl = (query) => { const { cate = 2, page = 1 } = query; return `xingganmeinvxiezhen/list_1_${page}.html` };
 
 function getSrc(src, url) {
   return src.startsWith('http') || src.startsWith('//') ? src : src.startsWith('/') ? (domain + src) : getSrc(url).replace(/([^\/]+?)$/, src);

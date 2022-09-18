@@ -14,34 +14,64 @@
                 cursor: pointer;
             }
             #root > img {
+                /* width: 33vw; */
                 width: 24.5vw;
             }
         </style>
     </head>
     <body>
-        cate: <input id="cate" value="3" type="number"/>
         page: <input id="page" value="1" type="number"/>
         <button onclick="init()">开始</button>
+        <button onclick="init(true)">下一页</button>
+        <span id="status"></span>
         <div id="select"></div>
         <div id="root"></div>
         <script>
             const select = document.getElementById('select');
             const root = document.getElementById('root');
-            function init() {
-                const cate = document.getElementById('cate').value;
-                const page = document.getElementById('page').value;
-                fetch(`/links?cate=${cate}&page=${page}`).then(res => res.json()).then(res => {
+            const pageIpt = document.getElementById('page');
+            const status = document.getElementById('status');
+            const query = new URL(location.href).searchParams;
+
+            opener && opener.focusTab();
+            function focusTab() {
+                window.focus();
+            } 
+            function loading(val) {
+                const txt = 'loading...';
+                if (val === undefined) {
+                    return status.innerHTML === txt;
+                } else {
+                    status.innerHTML = val ? txt : '';
+                }
+            }
+            function init(val) {
+                val && (pageIpt.value -= -1);
+                const page = pageIpt.value;
+                fetch(`/links?page=${page}`).then(res => res.json()).then(res => {
                     select.innerHTML = Object.keys(res).map(i => {
-                        return `<img src="${res[i]}" onclick="selectImg('${i}')"/>`
+                        return `<img src="${res[i]}" onclick="selectImg('${i}')" oncontextmenu="openPage('${page}','${i}')"/>`
                     }).join('');
                 })
             }
             function selectImg(url) {
+                if (loading()) {
+                    return;
+                }
+                loading(true);
                 fetch(`/link?url=${encodeURIComponent(url)}`).then(res => res.json()).then(res => {
                     root.innerHTML = res.map(i => `<img src="${i}"/>`).join('');
-                }).catch(e => alert('error!'));
+                }).catch(e => alert('error!')).finally(() => loading(false));
             }
-            init()
+            function openPage(page, url) {
+                window.open(`${location.origin}${location.pathname}?page=${page}&url=${encodeURIComponent(url)}`, '_blank')
+            }
+
+            const pageq = query.get('page');
+            pageq && (pageIpt.value = pageq);
+            const urlq = query.get('url');
+            init();
+            urlq && selectImg(urlq);
         </script>
     </body>
 </html>
