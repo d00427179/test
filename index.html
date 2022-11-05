@@ -20,8 +20,10 @@
         </style>
     </head>
     <body>
+        网站: <input id="site" value="1" type="number"/>
         page: <input id="page" value="1" type="number"/>
-        <button onclick="init()">开始</button>
+        <button onclick="init()">刷新</button>
+        <button onclick="init(false, true)">下一站</button>
         <button onclick="init(true)">下一页</button>
         <span id="status"></span>
         <div id="select"></div>
@@ -30,6 +32,7 @@
             const select = document.getElementById('select');
             const root = document.getElementById('root');
             const pageIpt = document.getElementById('page');
+            const siteIpt =  document.getElementById('site');
             const status = document.getElementById('status');
             const query = new URL(location.href).searchParams;
 
@@ -45,12 +48,12 @@
                     status.innerHTML = val ? txt : '';
                 }
             }
-            function init(val) {
-                val && (pageIpt.value -= -1);
-                const page = pageIpt.value;
-                fetch(`/links?page=${page}`).then(res => res.json()).then(res => {
+            function init(page, site) {
+                page && (pageIpt.value -= -1);
+                site && (siteIpt.value -= -1);
+                fetch(`/links?page=${pageIpt.value}&site=${siteIpt.value}`).then(res => res.json()).then(res => {
                     select.innerHTML = Object.keys(res).map(i => {
-                        return `<img src="${res[i]}" onclick="selectImg('${i}')" oncontextmenu="openPage('${page}','${i}')"/>`
+                        return `<img src="${res[i]}" onclick="selectImg('${i}')" oncontextmenu="openPage('${i}')"/>`
                     }).join('');
                 })
             }
@@ -59,17 +62,19 @@
                     return;
                 }
                 loading(true);
-                fetch(`/link?url=${encodeURIComponent(url)}`).then(res => res.json()).then(res => {
+                fetch(`/link?url=${encodeURIComponent(url)}&site=${siteIpt.value}`).then(res => res.json()).then(res => {
                     root.innerHTML = res.map(i => `<img src="${i}"/>`).join('');
                 }).catch(e => alert('error!')).finally(() => loading(false));
             }
-            function openPage(page, url) {
-                window.open(`${location.origin}${location.pathname}?page=${page}&url=${encodeURIComponent(url)}`, '_blank')
+            function openPage(url) {
+                window.open(`${location.origin}${location.pathname}?site=${siteIpt.value}&page=${pageIpt.value}&url=${encodeURIComponent(url)}`, '_blank')
             }
 
             const pageq = query.get('page');
-            pageq && (pageIpt.value = pageq);
+            const siteq = query.get('site');
             const urlq = query.get('url');
+            pageq && (pageIpt.value = pageq);
+            siteq && (siteIpt.value = siteq);
             init();
             urlq && selectImg(urlq);
         </script>
